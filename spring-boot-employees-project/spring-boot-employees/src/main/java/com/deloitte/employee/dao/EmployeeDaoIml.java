@@ -1,0 +1,38 @@
+package com.deloitte.employee.dao;
+ 
+import java.util.List;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+ 
+import com.deloitte.employee.model.Employee;
+import com.deloitte.employee.model.EmploymentHistory;
+@Repository
+public class EmployeeDaoIml implements EmployeeDao{
+
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+ 
+//    @Override
+//    public List<Employee> search(Long id) {
+//
+//        return jdbcTemplate.query("select * from employees where emp_id=?", new BeanPropertyRowMapper<Employee>(Employee.class),id);
+//
+//    }
+// 
+//    @Override
+//    public List<Employee> search(String name) {
+//
+//        return jdbcTemplate.query("select * from employees where first_name like '%"+name+"%' or last_name like '%"+name+"%'", new BeanPropertyRowMapper<Employee>(Employee.class));
+//    }
+ 
+    @Override    
+    public List<EmploymentHistory> findHistory(Long emp_id) {
+
+        return jdbcTemplate.query("select * from employment_history where emp_id=?",new BeanPropertyRowMapper<EmploymentHistory>(EmploymentHistory.class),emp_id );
+    }
+ 
+}

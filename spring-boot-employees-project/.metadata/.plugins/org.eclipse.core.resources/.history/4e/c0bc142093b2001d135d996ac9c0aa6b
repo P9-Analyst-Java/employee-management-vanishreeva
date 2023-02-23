@@ -1,0 +1,99 @@
+package com.deloitte.employee.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.deloitte.employee.dao.EmployeeDao;
+import com.deloitte.employee.model.Employee;
+import com.deloitte.employee.model.EmploymentHistory;
+import com.deloitte.employee.service.EmployeeService;
+
+ 
+ 
+@Controller
+public class EmployeeController {
+    
+    @Autowired
+    EmployeeService employeeService;
+    
+    @Autowired
+    EmployeeDao employeeDao;
+    
+    @RequestMapping("/")
+    public ModelAndView home() {
+        ModelAndView mav= new ModelAndView("home");
+        mav.addObject("message","List of Employees");
+        List<Employee> employees= employeeService.findAll();
+        mav.addObject("employees",employees);
+        return mav;
+    }
+    
+    @RequestMapping("/addemployee")
+    public ModelAndView addEmployee() {
+        ModelAndView mav= new ModelAndView("addemployee");
+        mav.addObject("addemployee", new Employee());
+        return mav;
+    }
+    
+    @RequestMapping(value="/addemployee", method=RequestMethod.POST)
+    public String save(@ModelAttribute("addemployee")Employee employee) {
+        employeeService.save(employee);
+        return "redirect:/";
+    }
+    @RequestMapping(value="/addemployee/{id}")
+    public ModelAndView edit(@PathVariable("id")Long id) {
+        ModelAndView mav= new ModelAndView("addemployee");
+        Employee employee=employeeService.findById(id);
+        mav.addObject("addemployee",employee);
+        return mav;
+        
+    }
+    @RequestMapping(value="/{id}",method=RequestMethod.GET)
+    public String delete(@PathVariable("id")Long id) {
+        employeeService.delete(id);
+        return "redirect:/";
+}
+    
+    @RequestMapping(value="/search", method = RequestMethod.POST)
+    public ModelAndView search(@Param("id") Long id, @Param("name") String name) {
+    ModelAndView mav = new ModelAndView("home");
+    List<Employee> employees;
+    // if(id!=null) {
+    // employees = employeeDao.search(id);
+    // }
+    // else {
+    // employees= employeeDao.search(name);
+    // }
+    // mav.addObject("employees", employees);
+    employees=employeeService.search(id, name);
+    if(employees!=null) {
+    mav.addObject("employees", employees);
+    }
+    System.out.println(employees);
+    return mav;
+    }
+    
+    @RequestMapping(value="/history/{emp_id}")
+    public ModelAndView viewHistory(@PathVariable ("emp_id") Long emp_id) {
+    ModelAndView mav= new ModelAndView("history");
+    List<EmploymentHistory> employees=employeeDao.findHistory(emp_id);
+    Employee employee1=employeeService.findById(emp_id);
+     
+    mav.addObject("employees",employees);
+    mav.addObject("name",employee1);
+     
+    return mav;
+     
+     
+    }
+
+
+}
